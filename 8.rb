@@ -51,22 +51,6 @@ class Display < Struct.new(:samples, :output)
     end
   end
 
-  def find_only_possible_digits!
-    unknown_samples.each do |sample|
-      possible_digits = sample.possible_digits
-      possible_digits.filter! do |digit|
-        p sample
-        p digit
-        p DIGIT_PATTERNS[digit]
-        p @possible_segments
-        DIGIT_PATTERNS[digit].all? do |segment|
-          !@possible_segments[segment].union(sample.wires).empty?
-        end
-      end
-      @known_digits[sample] = possible_digits[0] if possible_digits.length == 1
-    end
-  end
-
   def check_known_segments!
     unknown_samples.each do |sample|
       wires = sample.wires
@@ -89,7 +73,6 @@ class Display < Struct.new(:samples, :output)
     reduce_possible_segments!
     check_appearance_counts!
     check_known_segments!
-    reduce_possible_segments!
     if !done?
       puts "Not done!"
       p @possible_segments
